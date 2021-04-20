@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -15,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +40,11 @@ public class MainActivity extends AppCompatActivity {
         spinner1 = (Spinner) findViewById(R.id.spinner1);
         spinner2 = (Spinner) findViewById(R.id.spinner2);
         String[] curr_array = new String[] {
-                "USD", "EUR","JOD", "IQD","SYP","LBP","YER","AED","KWD","BHD","SAR","OMR","QAR","EGP","MAD","TND","DZD","LYD","SDG","MUR","SOS","DJF","KMF"
+                "USD", "EUR","JOD", "IQD","SYP",
+                "LBP","YER","AED","KWD","BHD",
+                "SAR","OMR","QAR","EGP","MAD",
+                "TND","DZD","LYD","SDG","MUR",
+                "SOS","DJF","KMF"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -50,50 +56,61 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void convert(View view) {
-        api();
-//        spinner1_value = spinner1.getSelectedItem().toString();
-//        spinner2_value = spinner2.getSelectedItem().toString();
-//        String val = (spinner1_value+"_"+spinner2_value).toString();
-//        jdv.setText(val);
+            api();
     }
     //====================================================================================================================================
     public void api() {
-        spinner1_value = spinner1.getSelectedItem().toString();
-        spinner2_value = spinner2.getSelectedItem().toString();
+        try {
+            spinner1_value = spinner1.getSelectedItem().toString();
+            spinner2_value = spinner2.getSelectedItem().toString();
+            String url = "https://free.currconv.com/api/v7/convert?q=" + spinner1_value + "_" + spinner2_value + "&compact=ultra&apiKey=d7877793bebc1e18230e";
+            JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        String val = spinner1_value + "_" + spinner2_value;
+                        rate = response.getString(val);
+                        float rate_f = Float.parseFloat(rate);
 
-        String url = "https://free.currconv.com/api/v7/convert?q="+spinner1_value+"_"+spinner2_value+"&compact=ultra&apiKey=d7877793bebc1e18230e";
-        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try
-                {
-                    String val = spinner1_value+"_"+spinner2_value;
-                    rate = response.getString(val);
-                    float rate_f = Float.parseFloat(rate);
+                        String fc_s = fc.getText().toString();
+                        String sc_s = sc.getText().toString();
 
-                    String fc_s = fc.getText().toString();
-                    String sc_s = sc.getText().toString();
+                        if (fc_s.length()>=1) {
+                            float fc_s_to_f = (Float.parseFloat(fc_s) * rate_f);
+                            sc.setText(fc_s_to_f + "");
+                        }
+                        if (fc_s.length()==0){
+                            Snackbar.make(findViewById(R.id.main_layout),
+                                    "Erorr", Snackbar.LENGTH_SHORT)
+                                    .setAction("Action", null).show();
+                        }
 
-                    float fc_s_to_f = (Float.parseFloat(fc_s)*rate_f);
-                    sc.setText(fc_s_to_f+"");
+                        textView.setText("1 " + spinner1_value + " = " + rate + " " + spinner2_value);
+                    } catch (JSONException e) {
+                        Toast.makeText(getApplicationContext(),
+                                "Error1",
+                                Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+                }
 
-                    textView.setText("1 "+spinner1_value+" = "+rate+" "+spinner2_value);
-
-                }catch (JSONException e)
-                {
-                    e.printStackTrace();
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(getApplicationContext(),
+                            "Volley Error",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
+            );
+            RequestQueue queue = Volley.newRequestQueue(this);
+            queue.add(jor);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),
+                    "First Admit Erorr",
+                    Toast.LENGTH_SHORT).show();
         }
-        );
-        RequestQueue queue= Volley.newRequestQueue(this);
-        queue.add(jor);
-    }
+    } // api void end
     //====================================================================================================================================
     public void clear (View h)
     {
@@ -156,6 +173,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+//        spinner1_value = spinner1.getSelectedItem().toString();
+//        spinner2_value = spinner2.getSelectedItem().toString();
+//        String val = (spinner1_value+"_"+spinner2_value).toString();
+//        jdv.setText(val);
 //
 //import androidx.appcompat.app.AppCompatActivity;
 //
