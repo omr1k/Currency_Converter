@@ -8,8 +8,8 @@ android {
         applicationId "com.omarstudiolimited.currencyconverterapp"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 3
-        versionName "3"
+        versionCode 4
+        versionName "4"
         setProperty("archivesBaseName", "Currency Converter")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
