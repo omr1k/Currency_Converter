@@ -2,10 +2,18 @@ package com.example.currencyconverterapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         spinner1 = (Spinner) findViewById(R.id.spinner1);
         spinner2 = (Spinner) findViewById(R.id.spinner2);
         String[] curr_array = new String[] {
-                "USD", "EUR","JOD", "IQD","SYP",
+                "EUR", "USD","JOD", "IQD","SYP",
                 "LBP","YER","AED","KWD","BHD",
                 "SAR","OMR","QAR","EGP","MAD",
                 "TND","DZD","LYD","SDG","MUR",
@@ -52,7 +60,52 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner1.setAdapter(adapter);
         spinner2.setAdapter(adapter);
-    }
+
+
+
+        fc.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                try {
+                    api();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+
+        spinner1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                api();
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+
+        spinner2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                api();
+            }
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
+
+
+
+
+    } // On Create End
+
+
+
+
 
 
     public void convert(View view) {
@@ -79,11 +132,11 @@ public class MainActivity extends AppCompatActivity {
                             float fc_s_to_f = (Float.parseFloat(fc_s) * rate_f);
                             sc.setText(fc_s_to_f + "");
                         }
-                        if (fc_s.length()==0){
-                            Snackbar.make(findViewById(R.id.main_layout),
-                                    "Erorr", Snackbar.LENGTH_SHORT)
-                                    .setAction("Action", null).show();
-                        }
+//                        if (fc_s.length()==0){
+//                            Snackbar.make(findViewById(R.id.main_layout),
+//                                    "Enter Values", Snackbar.LENGTH_SHORT)
+//                                    .setAction("Action", null).show();
+//                        }
 
                         textView.setText("1 " + spinner1_value + " = " + rate + " " + spinner2_value);
                     } catch (JSONException e) {
@@ -169,7 +222,12 @@ public class MainActivity extends AppCompatActivity {
     public void dot(View view) {
         fc.setText(fc.getText().toString()+".");
     }
-}
+
+
+
+
+
+} // Class End
 
 
 

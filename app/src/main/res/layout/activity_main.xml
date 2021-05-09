@@ -105,7 +105,7 @@
 
         <ImageView
             android:padding="5dp"
-            android:src="@drawable/ic_backspace__1_"
+            android:src="@drawable/ic_baseline_arrow_forward_24"
             android:layout_width="0dp"
             android:layout_weight=".3"
             android:layout_height="match_parent"
